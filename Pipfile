@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+build = "*"
+
+[dev-packages]
+twine = "*"
+flake8 = "*"
+mypy = "*"
+mypy-extensions = "*"
+black = "==21.11b1"
+pre-commit = "*"
+build = "*"
+
+[requires]
+python_version = "3.10"

@@ -1,0 +1,14 @@
+# Ignore the virtual environment folder
+.venv/
+
+# Ignore .mypy_cache
+.mypy_cache/
+
+# Ignore the dist folder
+*dist/
+
+# Ignore any .egg-info
+*.egg-info/
+
+# Ignore any .DS_Store
+*.DS_Store
