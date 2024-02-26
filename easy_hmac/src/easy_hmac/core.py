@@ -96,10 +96,9 @@ def verify_hmac(
     # define auth_failed here so we can raise the exception easily
     auth_failed = exceptions.AuthenticationFailed("HMAC Authentication Failed")
 
-    # ensure that the base64 md5 hash computed from the ENCODED raw body is the 
+    # ensure that the base64 md5 hash computed from the ENCODED raw body is the
     # same as the one present on md5_body
-    body_hash_b64 = b64encode(hashlib.new("md5", raw_body).digest())\
-        .decode("utf-8")
+    body_hash_b64 = b64encode(hashlib.new("md5", raw_body).digest()).decode("utf-8")
 
     if body_hash_b64 != md5_body:
         raise auth_failed
