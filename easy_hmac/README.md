@@ -98,7 +98,7 @@ expected_signature = "d8laojz+oDCPizTL1a401mHq5IpR1A9f9QK3+RQ/6hA="
 
 core.verify_hmac(secret, hmac_base64, headers["Content-MD5"], body.encode(), headers["Date"], headers["Content-Type"], path, method)
 
-``
+```
 
 You can raise an exception that the request has expired by changing the timestamp to;
 `timestamp = "Fri, 10 Dec 2021 00:16:57 GMT"`
