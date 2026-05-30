@@ -9,18 +9,16 @@ description = "A python package that creates and verifies HMAC signatures"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
-authors = [
-    { name = "Garreth Cain", email = "garrethccain@gmail.com" },
-]
+authors = [{ name = "Garreth Cain", email = "garrethccain@gmail.com" }]
 classifiers = [
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
 
 [project.urls]
@@ -52,16 +50,18 @@ changelog_file = "CHANGELOG.md"
 build_command = "uv build"
 commit_parser = "conventional"
 hvcs = "github"
+branch = "master"
+commit_message = "chore(release): {version}"
 
 [dependency-groups]
 dev = [
-    "twine>=6.0",
-    "flake8>=7.0",
-    "mypy>=1.0",
-    "mypy-extensions>=1.0",
-    "ruff>=0.8",
-    "pre-commit>=4.0",
-    "build>=1.0",
-    "pytest>=9.0.3",
-    "python-semantic-release>=9.0",
+  "twine>=6.0",
+  "flake8>=7.0",
+  "mypy>=1.0",
+  "mypy-extensions>=1.0",
+  "ruff>=0.8",
+  "pre-commit>=4.0",
+  "build>=1.0",
+  "pytest>=9.0.3",
+  "python-semantic-release>=9.0",
 ]
