@@ -46,6 +46,13 @@ select = "B,C,E,F,W,T4"
 files = "."
 ignore_missing_imports = true
 
+[tool.semantic_release]
+version_toml = ["pyproject.toml:project.version"]
+changelog_file = "CHANGELOG.md"
+build_command = "uv build"
+commit_parser = "conventional"
+hvcs = "github"
+
 [dependency-groups]
 dev = [
     "twine>=6.0",
@@ -56,4 +63,5 @@ dev = [
     "pre-commit>=4.0",
     "build>=1.0",
     "pytest>=9.0.3",
+    "python-semantic-release>=9.0",
 ]
