@@ -45,9 +45,11 @@ files = "."
 ignore_missing_imports = true
 
 [tool.semantic_release]
+version_variables = ["src/easy_hmac/__init__.py:__version__"]
 version_toml = ["pyproject.toml:project.version"]
+branch = "master"
 changelog_file = "CHANGELOG.md"
-build_command = "uv build"
+commit_message = "chore(release): {version}"
 commit_parser = "conventional"
 hvcs = "github"
 branch = "master"

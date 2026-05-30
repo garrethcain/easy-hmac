@@ -28,25 +28,6 @@ jobs:
         run: uv sync
 
       - name: Run semantic-release
-        id: semantic
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          uv run semantic-release version
-          NEW_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ "$PREV_TAG" != "$NEW_TAG" ] && [ -n "$NEW_TAG" ]; then
-            echo "released=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "released=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Build package
-        if: steps.semantic.outputs.released == 'true'
-        run: uv build
-
-      - name: Publish to PyPI
-        if: steps.semantic.outputs.released == 'true'
-        uses: pypa/gh-action-pypi-publish@release/v1
-
-      - name: Push changelog commit & tag
-        if: steps.semantic.outputs.released == 'true'
-        run: git push origin main --tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run semantic-release version
