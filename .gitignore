@@ -1,14 +1,17 @@
-# Ignore the virtual environment folder
+# Virtual environment
 .venv/
 
-# Ignore .mypy_cache
+# mypy
 .mypy_cache/
 
-# Ignore the dist folder
-*dist/
-
-# Ignore any .egg-info
+# Build artifacts
+dist/
 *.egg-info/
 
-# Ignore any .DS_Store
+# OS
 *.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
