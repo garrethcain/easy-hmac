@@ -1,105 +1,126 @@
-# HMAC Authentication (easy-hmac)
+# easy-hmac
 
-A pure python package with no dependencies to easily handle the generation and verification of HMAC
-signatures.
+[![PyPI](https://img.shields.io/pypi/v/easy-hmac.svg)](https://pypi.org/project/easy-hmac/)
+[![Python](https://img.shields.io/pypi/pyversions/easy-hmac.svg)](https://pypi.org/project/easy-hmac/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-# Installation
+A pure Python package with zero dependencies to generate and verify HMAC-SHA256 signatures for HTTP request authentication.
 
-This package is hosted at https://pypi.org/project/easy-hmac/
-
-## User
-If you don't need to customise this package, just install the package from
-[here](https://pypi.org/project/easy-hmac/).
-
-Ie. `pip install easy-hmac`
-
-
-## Developer
-1. Clone this repository
-2. Install [UV](https://docs.astral.sh/uv/)
-3. Sync dependencies:
+## Installation
 
 ```shell
+pip install easy-hmac
+```
+
+## Quick Start
+
+### Generate a signature
+
+```python
+import datetime
+import hashlib
+import hmac
+from base64 import b64encode
+
+from easy_hmac import core
+
+secret = "my-secret-key"
+body = '{"event": "updated", "status": "PROCESSING"}'
+method = "POST"
+path = "/api/v1/webhook"
+timestamp = datetime.datetime.now(datetime.UTC).strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+digest = core.generate_hmac_sha256(secret, method, body, path, timestamp)
+signature = b64encode(digest).decode()
+```
+
+### Verify a signature
+
+```python
+from base64 import b64encode, b64decode
+
+from easy_hmac import core, exceptions
+
+try:
+    core.verify_hmac(
+        secret=secret,
+        hmac_base64=signature,
+        md5_body=content_md5,
+        raw_body=body.encode(),
+        timestamp=timestamp,
+        content_type="application/json",
+        path=path,
+        request_method=method,
+    )
+except exceptions.AuthenticationFailed:
+    # Signature invalid, body tampered, or timestamp expired (>15 min)
+    pass
+```
+
+## API
+
+### `generate_hmac_sha256(secret, method, body, path, timestamp)`
+
+Generates an HMAC-SHA256 digest from HTTP request components.
+
+| Parameter   | Type     | Description                                                       |
+|-------------|----------|-------------------------------------------------------------------|
+| `secret`    | `str`    | The shared secret key                                             |
+| `method`    | `str`    | HTTP method (e.g. `"POST"`)                                       |
+| `body`      | `str`    | The request body                                                  |
+| `path`      | `str`    | The request path (e.g. `"/api/v1/webhook"`)                       |
+| `timestamp` | `str`    | GMT timestamp formatted as `"%a, %d %b %Y %H:%M:%S GMT"`         |
+
+**Returns:** `bytes` — the raw HMAC digest.
+
+### `verify_hmac(secret, hmac_base64, md5_body, raw_body, timestamp, content_type, path, request_method)`
+
+Verifies an incoming HMAC signature against the request components. Checks the body integrity via MD5 hash and rejects requests older than 15 minutes.
+
+| Parameter         | Type     | Description                                                       |
+|-------------------|----------|-------------------------------------------------------------------|
+| `secret`          | `str`    | The shared secret key                                             |
+| `hmac_base64`     | `str`    | The base64-encoded HMAC from the request's Authorization header   |
+| `md5_body`        | `str`    | The base64-encoded MD5 hash from the Content-MD5 header           |
+| `raw_body`        | `bytes`  | The raw request body                                              |
+| `timestamp`       | `str`    | The Date header value                                             |
+| `content_type`    | `str`    | The Content-Type header value                                     |
+| `path`            | `str`    | The request path                                                  |
+| `request_method`  | `str`    | The HTTP method                                                   |
+
+**Returns:** `True` if verification succeeds.
+
+**Raises:** `AuthenticationFailed` if the signature is invalid, the body was tampered, the timestamp is malformed, or the request is older than 15 minutes.
+
+### Exceptions
+
+#### `AuthenticationFailed`
+
+Raised by `verify_hmac` when verification fails. Subclass of `Exception`.
+
+## Message Format
+
+Both functions construct the HMAC message by joining components with newlines:
+
+```
+HTTP_METHOD\nCONTENT_MD5\nCONTENT_TYPE\nTIMESTAMP\nPATH
+```
+
+This follows a common pattern for REST API HMAC authentication where the content MD5 ensures body integrity and the timestamp prevents replay attacks.
+
+## Development
+
+```shell
+# Clone and set up
 uv sync
-```
 
-4. Run the tests:
+# Run tests
+uv run pytest
 
-```shell
-uv run python -m pytest tests/
-```
-
-5. Build the package:
-
-```shell
+# Build
 uv build
 ```
 
-# Usage
-`easy-hmac` provides two helper functions for HMAC authentication:
+## License
 
-- `generate_hmac_sha256` - generates a SHA256 HMAC from two strings (a secret
-    key and a http message)
-- `verify_hmac` - given an HMAC and a message, verifies if the HMAC generated by
-    the message is equal to the one passed as argument
-
-
-
-## Step 1
-Import the package.
-`python
-import datetime
-from easy_hmac import core
-import hmac
-import hashlib 
-from base64 import b64encode
-from typing import Dict, Any
-`
-
-## Step 2
-Create some vars we can use to generate and verify the HMAC.
-
-```python
-
-# fake identifier used to retrieve the secret from a db.
-secret = "79721503-d1ef-46b7-b4ca-fec39ece902f"
-body = '{"event": "lifecycle_updated", "payload": {"uuid": "cb8c79cd-8d79-4698-90a2-662eeab8da98", "timestamp": "2021-12-10T00:16:08.048401Z", "status": "PROCESSING"}}'
-method = "POST"
-timestamp = datetime.datetime.now(datetime.UTC).strftime("%a, %d %b %Y %H:%M:%S GMT")
-path = "/api/v1/my/path"
-
-# vars required for verifying the HMAC.
-# This step is a little long because we need to fake some parameters we'd usually already have.
-identifier = "2e42a19593f047e080285e49864b0fb6"
-hash = hashlib.md5(body.encode())
-content_type = "application/json"
-content_md5 = b64encode(hash.digest()).decode('utf-8')
-message = "\n".join([method, content_md5, content_type, timestamp, path])
-signature = hmac.new(bytes(secret, "latin-1"), bytes(message, "latin-1"), digestmod=hashlib.sha256)
-hmac_base64 = b64encode(signature.digest()).decode("utf-8")
-
-headers = {
-    "Date": timestamp,
-    "Content-MD5": content_md5,
-    "Content-Type": content_type,
-    "Authorization": "HMAC {}:{}".format(identifier, hmac_base64),
-}
-request = {"method": method, "body": body, "path": path, "headers": headers}
-```
-
-## Step 3
-Create and verify the signature.
-
-```
-result_digest = core.generate_hmac_sha256(secret, method, body, path, timestamp)
-actual_signature = b64encode(result_digest).decode()
-expected_signature = "d8laojz+oDCPizTL1a401mHq5IpR1A9f9QK3+RQ/6hA="
-
-core.verify_hmac(secret, hmac_base64, headers["Content-MD5"], body.encode(), headers["Date"], headers["Content-Type"], path, method)
-
-```
-
-You can raise an exception that the request has expired by changing the timestamp to;
-`timestamp = "Fri, 10 Dec 2021 00:16:57 GMT"`
-and then rerunning the second set of vars above to generate an incoming request that is too old and verifying
-the signature again.
+[MIT](LICENSE)
