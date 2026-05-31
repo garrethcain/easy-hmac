@@ -1,4 +1,6 @@
 import datetime
+import hashlib
+import hmac as hmac_mod
 from base64 import b64encode
 
 import pytest
@@ -16,9 +18,6 @@ def token():
 
 
 def _compute_dummy_request(token, body, timestamp):
-    import hashlib
-    import hmac as hmac_mod
-
     method = "GET"
     path = "/api/v1/my/request"
     content_type = "application/json"

@@ -22,7 +22,7 @@ import hashlib
 import hmac
 from base64 import b64encode
 
-from easy_hmac import core
+from easy_hmac import generate_hmac_sha256
 
 secret = "my-secret-key"
 body = '{"event": "updated", "status": "PROCESSING"}'
@@ -30,7 +30,7 @@ method = "POST"
 path = "/api/v1/webhook"
 timestamp = datetime.datetime.now(datetime.UTC).strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-digest = core.generate_hmac_sha256(secret, method, body, path, timestamp)
+digest = generate_hmac_sha256(secret, method, body, path, timestamp)
 signature = b64encode(digest).decode()
 ```
 
@@ -39,10 +39,10 @@ signature = b64encode(digest).decode()
 ```python
 from base64 import b64encode, b64decode
 
-from easy_hmac import core, exceptions
+from easy_hmac import verify_hmac, AuthenticationFailed
 
 try:
-    core.verify_hmac(
+    verify_hmac(
         secret=secret,
         hmac_base64=signature,
         md5_body=content_md5,
@@ -52,7 +52,7 @@ try:
         path=path,
         request_method=method,
     )
-except exceptions.AuthenticationFailed:
+except AuthenticationFailed:
     # Signature invalid, body tampered, or timestamp expired (>15 min)
     pass
 ```

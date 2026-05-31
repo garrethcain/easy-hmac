@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import hashlib
 import hmac
 
-from easy_hmac import exceptions
+from easy_hmac.exceptions import AuthenticationFailed
 from easy_hmac.utils import http
 
 
@@ -24,7 +24,7 @@ def generate_hmac_sha256(
     """
 
     content_type: str = "application/json"
-    _hash = hashlib.md5(body.encode())
+    _hash = hashlib.md5(body.encode(), usedforsecurity=False)
     content_md5 = b64encode(_hash.digest()).decode("utf-8")
     message_parts = [method, content_md5, content_type, timestamp, path]
     message = "\n".join(message_parts)
@@ -92,15 +92,17 @@ def verify_hmac(
             http.parse_http_date(timestamp), timezone.utc
         )
     except ValueError as e:
-        raise exceptions.AuthenticationFailed("Malformed Date header") from e
+        raise AuthenticationFailed("Malformed Date header") from e
 
     if abs(request_time - datetime.now(timezone.utc)) > timedelta(minutes=15):
-        raise exceptions.AuthenticationFailed("Request time too old")
+        raise AuthenticationFailed("Request time too old")
 
-    body_hash_b64 = b64encode(hashlib.new("md5", raw_body).digest()).decode("utf-8")
+    body_hash_b64 = b64encode(
+        hashlib.new("md5", raw_body, usedforsecurity=False).digest()
+    ).decode("utf-8")
 
     if body_hash_b64 != md5_body:
-        raise exceptions.AuthenticationFailed("HMAC Authentication Failed")
+        raise AuthenticationFailed("HMAC Authentication Failed")
 
     hmac_bytes = b64decode(hmac_base64)
 
@@ -117,4 +119,4 @@ def verify_hmac(
     if _verify_hmac(secret, hmac_bytes, message):
         return True
 
-    raise exceptions.AuthenticationFailed("HMAC Authentication Failed")
+    raise AuthenticationFailed("HMAC Authentication Failed")
