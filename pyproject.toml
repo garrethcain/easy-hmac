@@ -52,8 +52,6 @@ changelog_file = "CHANGELOG.md"
 commit_message = "chore(release): {version}"
 commit_parser = "conventional"
 hvcs = "github"
-branch = "master"
-commit_message = "chore(release): {version}"
 
 [dependency-groups]
 dev = [
