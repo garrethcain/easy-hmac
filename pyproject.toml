@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "easy-hmac"
-version = "1.2.0"
+version = "1.2.1"
 description = "A python package that creates and verifies HMAC signatures"
 readme = "README.md"
 license = "MIT"
@@ -23,6 +23,7 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/garrethcain/easy-hmac/"
+
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/easy_hmac"]
@@ -52,6 +53,7 @@ changelog_file = "CHANGELOG.md"
 commit_message = "chore(release): {version}"
 commit_parser = "conventional"
 hvcs = "github"
+
 
 [dependency-groups]
 dev = [
