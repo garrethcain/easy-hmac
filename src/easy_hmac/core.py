@@ -27,7 +27,7 @@ def generate_hmac_sha256(
     message_parts = [method, contentMD5, contentType, timestamp, path]
     message = "\n".join(message_parts)
     signature = hmac.new(
-        bytes(secret, "latin-1"), bytes(message, "latin-1"), digestmod=hashlib.sha256
+        secret.encode("utf-8"), message.encode("utf-8"), digestmod=hashlib.sha256
     )
     return signature.digest()
 

@@ -30,7 +30,7 @@ __T = r"(?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})"
 # Sun ex: Sun, 06 Nov 1994 08:49:37 GMT
 RFC1123_DATE = re.compile(r"^\w{3}, %s %s %s %s GMT$" % (__D, __M, __Y, __T))
 
-# here the day name can be Monday, Tuesday, Wednesday, Thursday, Saturday, 
+# here the day name can be Monday, Tuesday, Wednesday, Thursday, Saturday,
 # Sunday hence \w{6,9} in the beginning
 # ex: Sunday, 06-Nov-94 08:49:37 GMT
 RFC850_DATE = re.compile(r"^\w{6,9}, %s-%s-%s %s GMT$" % (__D, __M, __Y2, __T))
@@ -75,7 +75,9 @@ def parse_http_date(date: str) -> int:
         _hour = int(m["hour"])
         _min = int(m["min"])
         _sec = int(m["sec"])
-        result = datetime.datetime(year, _month, _day, _hour, _min, _sec)
+        result = datetime.datetime(
+            year, _month, _day, _hour, _min, _sec, tzinfo=datetime.timezone.utc
+        )
         return calendar.timegm(result.utctimetuple())
     except Exception as exc:
         raise ValueError("%r is not a valid date" % date) from exc

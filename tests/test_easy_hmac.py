@@ -87,7 +87,7 @@ class TestEasyHmac(unittest.TestCase):
         """
 
         timestamp = datetime.datetime.now(datetime.UTC).strftime(
-            "%a, %d %b %Y %H:%M:%S UTC"
+            "%a, %d %b %Y %H:%M:%S GMT"
         )
         request = self.compute_dummy_request(self.token, "", timestamp)
         body = request["body"]
