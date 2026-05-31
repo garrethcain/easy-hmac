@@ -22,7 +22,7 @@ def _compute_dummy_request(token, body, timestamp):
     path = "/api/v1/my/request"
     content_type = "application/json"
 
-    body_hash = hashlib.md5(body.encode())
+    body_hash = hashlib.md5(body.encode(), usedforsecurity=False)
     content_md5 = b64encode(body_hash.digest()).decode("utf-8")
     message_parts = [method, content_md5, content_type, timestamp, path]
     message = "\n".join(message_parts)

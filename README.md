@@ -18,8 +18,6 @@ pip install easy-hmac
 
 ```python
 import datetime
-import hashlib
-import hmac
 from base64 import b64encode
 
 from easy_hmac import generate_hmac_sha256
@@ -37,8 +35,6 @@ signature = b64encode(digest).decode()
 ### Verify a signature
 
 ```python
-from base64 import b64encode, b64decode
-
 from easy_hmac import verify_hmac, AuthenticationFailed
 
 try:
