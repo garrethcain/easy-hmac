@@ -10,13 +10,10 @@ permissions:
   id-token: write
 
 jobs:
-  release:
+  test:
     runs-on: ubuntu-latest
-    concurrency: release
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -27,7 +24,49 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Run semantic-release
+      - name: Run tests
+        run: uv run pytest
+
+  release:
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      tag: ${{ steps.release.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.release.outputs.tag }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        run: uv publish
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: uv run semantic-release version
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
