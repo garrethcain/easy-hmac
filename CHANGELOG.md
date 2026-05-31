@@ -1,6 +1,57 @@
 # CHANGELOG
 
 
+## v1.2.2 (2026-05-31)
+
+### Bug Fixes
+
+- Resolve encoding mismatch, naive datetime, and incorrect test timestamp
+  ([`4a61ced`](https://github.com/garrethcain/easy-hmac/commit/4a61ceddd370e46d7ffbe7e40d6887f26129fa60))
+
+- Normalize HMAC encoding to utf-8 in generate_hmac_sha256 to match __verify_hmac (previously
+  latin-1 vs utf-8 would break on non-ASCII) - Fix naive datetime in parse_http_date by adding
+  tzinfo=utc - Fix test_verify_hmac_wrong_secret to use GMT suffix (was UTC, which masked the actual
+  failure reason)
+
+- Suppress MD5 deprecation in test helper and remove unused imports from README
+  ([`7ddefd0`](https://github.com/garrethcain/easy-hmac/commit/7ddefd0b1a8dd351b0266be56e42d3b6fd8d126b))
+
+- Add usedforsecurity=False to hashlib.md5 in test helper - Remove unused import hmac from generate
+  example - Remove unused b64encode/b64decode from verify example
+
+### Documentation
+
+- Update the readme
+  ([`0011c79`](https://github.com/garrethcain/easy-hmac/commit/0011c79970e720b485f86f98624c248746c0d429))
+
+### Refactoring
+
+- Clean up code style, types, docs, and migrate tests to pytest
+  ([`c6d0f6a`](https://github.com/garrethcain/easy-hmac/commit/c6d0f6a5a89c2db2b60c73dad85c22fc0f0d198e))
+
+- Add return type annotations to generate_hmac_sha256 and verify_hmac - Complete verify_hmac
+  docstring with all parameter descriptions - Rename camelCase locals to snake_case (content_type,
+  content_md5) - Raise exceptions inline instead of pre-constructing - Remove stale TODO and inline
+  comments from utils/http.py - Re-export public API from __init__.py - Migrate tests from unittest
+  to pytest
+
+- Remove circular import, fix MD5 deprecation, and clean up config
+  ([`f87158d`](https://github.com/garrethcain/easy-hmac/commit/f87158d32d375fd3fe871e55fa6cb9ab6056be67))
+
+- Import AuthenticationFailed directly instead of through package to avoid circular import between
+  core.py and __init__.py - Add usedforsecurity=False to hashlib.md5 calls to suppress
+  DeprecationWarning in Python 3.9+ - Remove legacy [tool.isort] and [tool.flake8] configs (replaced
+  by ruff) - Remove unused dev dependencies (flake8, build, twine) - Remove unnecessary id-token
+  permission from release workflow - Move test helper imports to module level - Update README
+  examples to use re-exported public API
+
+- Remove name-mangled private function and inline comment
+  ([`0864fb3`](https://github.com/garrethcain/easy-hmac/commit/0864fb387557fb533c7c287ec40447883438231a))
+
+- Rename __verify_hmac to _verify_hmac to avoid Python name mangling - Remove inline comment from
+  exceptions.py class definition
+
+
 ## v1.2.1 (2026-05-31)
 
 ### Bug Fixes
